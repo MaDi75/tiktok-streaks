@@ -7,7 +7,6 @@ mod browser;
 mod scheduler;
 mod store;
 mod telegram;
-mod telemetry;
 mod tiktok;
 
 /// Подпись автора — вшивается в бинарник для доказательства авторства при копировании.
@@ -279,8 +278,6 @@ fn save_config(state: State<AppState>, cfg: store::Config) {
         c.hide_browser = cfg.hide_browser;
         c.telegram_token = cfg.telegram_token.trim().to_string();
         c.selectors = cfg.selectors;
-        c.telemetry_enabled = cfg.telemetry_enabled;
-        c.telemetry_endpoint = cfg.telemetry_endpoint.trim().to_string();
     });
 }
 
@@ -490,15 +487,8 @@ fn main() {
         .setup(|app| {
             let dir = app.path().app_data_dir()?;
             std::fs::create_dir_all(&dir)?;
-            let store = store::Store::load(dir.join("config.json"));
-            // Анонимный идентификатор установки — создаётся один раз, при первом запуске.
-            if store.get().install_id.is_empty() {
-                let id: String =
-                    (0..16).map(|_| format!("{:02x}", rand::thread_rng().gen::<u8>())).collect();
-                store.update(|c| c.install_id = id);
-            }
             app.manage(AppState {
-                store,
+                store: store::Store::load(dir.join("config.json")),
                 busy: tokio::sync::Mutex::new(()),
                 profile_dir: dir.join("browser-profile"),
                 pair_code: std::sync::Mutex::new(String::new()),
@@ -532,7 +522,6 @@ fn main() {
             }
             scheduler::start(app.handle().clone());
             telegram::start(app.handle().clone());
-            telemetry::start(app.handle().clone());
             Ok(())
         })
         .on_window_event(|w, ev| {
