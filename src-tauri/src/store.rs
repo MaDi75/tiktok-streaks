@@ -91,6 +91,14 @@ pub struct Config {
 
     pub selectors: Selectors,
     pub selectors_version: u32,
+
+    // --- анонимная статистика (opt-in, по умолчанию выключена) ---
+    /// Отправлять ли анонимную статистику использования.
+    pub telemetry_enabled: bool,
+    /// Адрес сервера-приёмника. Пусто — ничего не отправляется, даже если включено.
+    pub telemetry_endpoint: String,
+    /// Случайный анонимный идентификатор этой установки (создаётся один раз).
+    pub install_id: String,
 }
 
 impl Default for Config {
@@ -115,6 +123,9 @@ impl Default for Config {
             telegram_chat_id: 0,
             selectors: Selectors::default(),
             selectors_version: SELECTORS_VERSION,
+            telemetry_enabled: false,
+            telemetry_endpoint: String::new(),
+            install_id: String::new(),
         }
     }
 }

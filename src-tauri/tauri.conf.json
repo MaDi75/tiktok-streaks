@@ -26,6 +26,9 @@
   "bundle": {
     "active": true,
     "targets": ["nsis"],
+    "publisher": "MaDi75",
+    "copyright": "© 2026 MaDi75 — https://github.com/MaDi75/tiktok-streaks",
+    "homepage": "https://github.com/MaDi75/tiktok-streaks",
     "icon": ["icons/32x32.png", "icons/128x128.png", "icons/icon.ico"]
   }
 }

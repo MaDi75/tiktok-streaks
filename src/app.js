@@ -295,6 +295,8 @@ $('hideBrowser').onchange = e => {
   if (cfg.hideBrowser) invoke('hide_browser_now').catch(() => {});
 };
 $('autostart').onchange = e => invoke('set_autostart', { enabled: e.target.checked }).catch(err => toast(String(err), true));
+$('telemetryEnabled').onchange = e => { cfg.telemetryEnabled = e.target.checked; save(); };
+$('telemetryEndpoint').oninput = e => { cfg.telemetryEndpoint = e.target.value.trim(); save(); };
 
 $('btnSaveSel').onclick = () => {
   try {
@@ -330,7 +332,10 @@ listen('telegram-paired', async () => {
   $('guardTime').value = cfg.guardTime;
   $('hideBrowser').checked = cfg.hideBrowser;
   $('selectors').value = JSON.stringify(cfg.selectors, null, 2);
+  $('telemetryEnabled').checked = cfg.telemetryEnabled;
+  $('telemetryEndpoint').value = cfg.telemetryEndpoint || '';
   $('autostart').checked = await invoke('get_autostart').catch(() => false);
+  $('appVersion').textContent = 'v' + await invoke('app_version').catch(() => '');
   renderPresets();
   renderChats();
   renderTelegram(true);

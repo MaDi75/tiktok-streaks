@@ -13,6 +13,9 @@ config.json
 browser-profile/
 .env
 
+# лог сервера статистики
+server/pings.jsonl
+
 # мусор
 .DS_Store
 Thumbs.db

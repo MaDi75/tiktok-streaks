@@ -1,10 +1,20 @@
+// TikTok Streaks — помощник для поддержания серий в личных сообщениях TikTok.
+// © 2026 MaDi75 — https://github.com/MaDi75/tiktok-streaks
+// Лицензия MIT (см. файл LICENSE). При копировании сохраняйте указание автора.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod browser;
 mod scheduler;
 mod store;
 mod telegram;
+mod telemetry;
 mod tiktok;
+
+/// Подпись автора — вшивается в бинарник для доказательства авторства при копировании.
+/// `#[used]` не даёт линкеру её выкинуть. Не удалять.
+#[used]
+static BUILD_SIGNATURE: &[u8] =
+    b"TikTokStreaks::author=MaDi75::repo=github.com/MaDi75/tiktok-streaks";
 
 use rand::Rng;
 use serde::Serialize;
@@ -269,7 +279,15 @@ fn save_config(state: State<AppState>, cfg: store::Config) {
         c.hide_browser = cfg.hide_browser;
         c.telegram_token = cfg.telegram_token.trim().to_string();
         c.selectors = cfg.selectors;
+        c.telemetry_enabled = cfg.telemetry_enabled;
+        c.telemetry_endpoint = cfg.telemetry_endpoint.trim().to_string();
     });
+}
+
+/// Версия приложения — для карточки «О программе».
+#[tauri::command]
+fn app_version(app: AppHandle) -> String {
+    app.package_info().version.to_string()
 }
 
 #[tauri::command]
@@ -472,8 +490,15 @@ fn main() {
         .setup(|app| {
             let dir = app.path().app_data_dir()?;
             std::fs::create_dir_all(&dir)?;
+            let store = store::Store::load(dir.join("config.json"));
+            // Анонимный идентификатор установки — создаётся один раз, при первом запуске.
+            if store.get().install_id.is_empty() {
+                let id: String =
+                    (0..16).map(|_| format!("{:02x}", rand::thread_rng().gen::<u8>())).collect();
+                store.update(|c| c.install_id = id);
+            }
             app.manage(AppState {
-                store: store::Store::load(dir.join("config.json")),
+                store,
                 busy: tokio::sync::Mutex::new(()),
                 profile_dir: dir.join("browser-profile"),
                 pair_code: std::sync::Mutex::new(String::new()),
@@ -507,6 +532,7 @@ fn main() {
             }
             scheduler::start(app.handle().clone());
             telegram::start(app.handle().clone());
+            telemetry::start(app.handle().clone());
             Ok(())
         })
         .on_window_event(|w, ev| {
@@ -530,7 +556,8 @@ fn main() {
             tg_pair_code,
             tg_unlink,
             get_autostart,
-            set_autostart
+            set_autostart,
+            app_version
         ])
         .run(tauri::generate_context!())
         .expect("ошибка запуска приложения");
