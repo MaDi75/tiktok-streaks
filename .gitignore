@@ -1,0 +1,20 @@
+# зависимости и сборка
+node_modules/
+src-tauri/target/
+src-tauri/gen/
+*.exe
+
+# локальные настройки сборки конкретного компьютера
+src-tauri/.cargo/
+rust-toolchain.toml
+
+# на всякий случай: личные данные приложения хранятся в %APPDATA%, но никогда не коммитим их сюда
+config.json
+browser-profile/
+.env
+
+# мусор
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

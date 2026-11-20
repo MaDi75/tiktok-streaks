@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TikTok Streaks</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="logo">🔥</span> TikTok Streaks</div>
+    <div class="actions">
+      <button id="btnDiag" class="ghost">🩺 Самопроверка</button>
+      <button id="btnOpen" class="ghost">Показать браузер</button>
+      <button id="btnRefresh" class="ghost">↻ Обновить список</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="left">
+      <div class="listHead">
+        <input id="search" type="search" placeholder="Поиск по имени…">
+        <label class="onlyMarked"><input id="onlyMarked" type="checkbox"> только с серией</label>
+      </div>
+      <div id="hint" class="hint"></div>
+      <div id="chats" class="chats"></div>
+    </section>
+
+    <aside class="right">
+      <div id="diagCard" class="card hidden">
+        <h3>Самопроверка <button id="diagClose" class="x" title="Закрыть">✕</button></h3>
+        <div id="diag" class="diag"></div>
+      </div>
+
+      <div class="card">
+        <h3>Что отправить</h3>
+        <div id="presets" class="presets"></div>
+        <input id="defaultMessage" type="text" placeholder="Своё сообщение…">
+        <p class="muted">Это общее сообщение. Человеку можно задать своё — поле появляется в списке, когда он отмечен 🔥.</p>
+      </div>
+
+      <button id="btnSendAll" class="primary">Отправить всем <span id="markedCount">0</span></button>
+
+      <div class="card">
+        <h3>Защита серии</h3>
+        <label class="row"><input id="guardEnabled" type="checkbox"> Проверять ответы каждый день в <input id="guardTime" type="time"></label>
+        <button id="btnCheck" class="ghost wide">💬 Проверить, кто ответил сегодня</button>
+        <div id="checkResult" class="muted"></div>
+        <p class="muted">Если кто-то не ответил — придёт предупреждение. Чтобы проверить, приложение открывает чат, поэтому сообщения в нём станут прочитанными.</p>
+      </div>
+
+      <div class="card">
+        <h3>Авто-отправка</h3>
+        <label class="row"><input id="autoEnabled" type="checkbox"> Каждый день в <input id="autoTime" type="time"></label>
+        <label class="row"><input id="skipToday" type="checkbox"> Пропускать, кому уже отправлено сегодня</label>
+        <label class="row"><input id="autostart" type="checkbox"> Запускать вместе с Windows (в трей)</label>
+        <label class="row"><input id="hideBrowser" type="checkbox"> Прятать окно браузера</label>
+      </div>
+
+      <div class="card">
+        <h3>Telegram-бот</h3>
+        <div id="tgNoToken">
+          <p class="muted" style="margin-top:0">Уведомления и команды с телефона. Создай бота у <b>@BotFather</b> (команда /newbot) и вставь сюда его токен.</p>
+          <div class="inline">
+            <input id="tgToken" type="password" placeholder="123456:ABC-DEF…" autocomplete="off">
+            <button id="btnTgSave" class="ghost small">Сохранить</button>
+          </div>
+        </div>
+        <div id="tgHasToken" class="hidden">
+          <div id="tgStatus" class="tgStatus"></div>
+          <div id="tgPair" class="hidden">
+            <button id="btnTgCode" class="ghost wide">Получить код привязки</button>
+            <div id="tgCode" class="tgCode hidden"></div>
+          </div>
+          <p class="muted">Команды: /status, /send, /send имя, /check</p>
+          <div class="inline">
+            <button id="btnTgUnlink" class="ghost small hidden">Отвязать</button>
+            <button id="btnTgRemove" class="ghost small">Удалить бота</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card logCard">
+        <h3>Журнал</h3>
+        <div id="log" class="log"><div class="muted">Пока пусто</div></div>
+      </div>
+
+      <details class="card">
+        <summary>Для продвинутых: селекторы сайта</summary>
+        <p class="muted">Если TikTok поменял сайт и самопроверка показывает ✗ — здесь правятся CSS-селекторы.</p>
+        <textarea id="selectors" rows="12" spellcheck="false"></textarea>
+        <button id="btnSaveSel" class="ghost small">Сохранить селекторы</button>
+      </details>
+    </aside>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
