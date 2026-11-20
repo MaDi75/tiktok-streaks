@@ -319,6 +319,26 @@ listen('telegram-paired', async () => {
   toast('Telegram-бот привязан ✓');
 });
 
+// ---------- тема ----------
+
+const THEME_KEY = 'tts-theme';
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  // на кнопке — иконка темы, на которую переключимся
+  $('btnTheme').textContent = t === 'light' ? '🌙' : '☀️';
+  try { localStorage.setItem(THEME_KEY, t); } catch {}
+}
+(function initTheme() {
+  let t;
+  try { t = localStorage.getItem(THEME_KEY); } catch {}
+  if (t !== 'light' && t !== 'dark') {
+    t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+  applyTheme(t);
+})();
+$('btnTheme').onclick = () =>
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+
 // ---------- старт ----------
 
 (async () => {

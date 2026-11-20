@@ -29,6 +29,17 @@
     "publisher": "MaDi75",
     "copyright": "© 2026 MaDi75 — https://github.com/MaDi75/tiktok-streaks",
     "homepage": "https://github.com/MaDi75/tiktok-streaks",
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/icon.ico"]
+    "shortDescription": "Не теряй серии (огоньки) в сообщениях TikTok",
+    "longDescription": "TikTok Streaks — помощник, который сам отправляет сообщения и следит, чтобы ваши серии (огоньки) в личных сообщениях TikTok не сгорели. Неофициальный проект. © 2026 MaDi75.",
+    "licenseFile": "../LICENSE",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/icon.ico"],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "installerIcon": "icons/icon.ico",
+        "headerImage": "installer/header.bmp",
+        "sidebarImage": "installer/sidebar.bmp"
+      }
+    }
   }
 }

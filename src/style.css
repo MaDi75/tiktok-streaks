@@ -9,6 +9,22 @@
   --cyan: #25f4ee;
   --ok: #3ddc84;
   --warn: #ffb020;
+  --shadow: 0 8px 24px rgba(0, 0, 0, .35);
+  --scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f8;
+  --panel: #ffffff;
+  --panel2: #eef0f5;
+  --line: #e2e5ec;
+  --text: #16171c;
+  --muted: #6c6f7a;
+  --pink: #fe2c55;
+  --cyan: #0ab4ac;
+  --ok: #17a05a;
+  --warn: #c67c00;
+  --shadow: 0 8px 24px rgba(20, 22, 40, .10);
+  --scheme: light;
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
@@ -16,6 +32,8 @@ body {
   background: var(--bg); color: var(--text);
   font: 14px/1.4 "Segoe UI", system-ui, sans-serif;
   display: flex; flex-direction: column; overflow: hidden;
+  color-scheme: var(--scheme);
+  transition: background .2s ease, color .2s ease;
 }
 button, input, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; border: 0; border-radius: 10px; }
@@ -88,7 +106,7 @@ main { flex: 1; display: grid; grid-template-columns: 1fr 340px; min-height: 0; 
 }
 #selectors { font: 12px Consolas, monospace; resize: vertical; margin-top: 8px; }
 .row { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
-#autoTime, #guardTime { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 3px 6px; color-scheme: dark; }
+#autoTime, #guardTime { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 3px 6px; color-scheme: var(--scheme); }
 summary { cursor: pointer; color: var(--muted); }
 
 .primary {
@@ -138,3 +156,38 @@ summary { cursor: pointer; color: var(--muted); }
 }
 .toast.show { opacity: 1; transform: translateX(-50%); }
 .toast.err { border-color: var(--pink); }
+
+/* ---------- темы и полировка ---------- */
+button, .ghost, .card, .chat, #search, .msg, .preset, input, textarea, .fire, .one {
+  transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, color .15s ease, filter .15s ease, transform .1s ease;
+}
+header {
+  background: linear-gradient(180deg, var(--panel), color-mix(in srgb, var(--panel) 92%, var(--bg)));
+}
+.brand { letter-spacing: .2px; }
+.card { box-shadow: var(--shadow); }
+.ghost:hover:not(:disabled), .preset:hover { transform: translateY(-1px); }
+.ghost:active:not(:disabled), .primary:active:not(:disabled), .fire:active, .one:active:not(:disabled) { transform: translateY(0) scale(.97); }
+.primary { transition: filter .15s ease, box-shadow .2s ease, transform .1s ease; border-radius: 14px; }
+.primary:hover:not(:disabled) { box-shadow: 0 8px 26px rgba(254, 44, 85, .42); transform: translateY(-1px); }
+.fire.on { filter: none; text-shadow: 0 0 10px rgba(254, 44, 85, .55); }
+
+/* переключатель темы */
+#btnTheme { width: 40px; padding: 8px 0; font-size: 15px; line-height: 1; }
+
+/* карточка «О программе» */
+.about { text-align: center; }
+.about p { margin: 4px 0; }
+.about p:first-of-type { font-weight: 600; font-size: 15px; }
+
+/* аккуратные скроллбары */
+.right::-webkit-scrollbar, .chats::-webkit-scrollbar, .log::-webkit-scrollbar, textarea::-webkit-scrollbar { width: 10px; height: 10px; }
+.right::-webkit-scrollbar-thumb, .chats::-webkit-scrollbar-thumb, .log::-webkit-scrollbar-thumb, textarea::-webkit-scrollbar-thumb {
+  background: var(--line); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box;
+}
+.right::-webkit-scrollbar-thumb:hover, .chats::-webkit-scrollbar-thumb:hover, .log::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+.right::-webkit-scrollbar-track { background: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
