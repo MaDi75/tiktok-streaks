@@ -26,6 +26,7 @@ fn base() -> String {
 
 #[derive(Deserialize, Debug)]
 struct Target {
+    id: String,
     #[serde(rename = "type")]
     kind: String,
     url: String,
@@ -54,6 +55,14 @@ pub async fn is_running() -> bool {
     targets().await.is_ok()
 }
 
+/// Закрыть вкладку по её id (чтобы лишние вкладки TikTok не копились и не ели память).
+async fn close_target(id: &str) {
+    let client = reqwest::Client::builder().timeout(Duration::from_secs(3)).build();
+    if let Ok(c) = client {
+        let _ = c.get(format!("{}/json/close/{}", base(), id)).send().await;
+    }
+}
+
 /// Подключается к браузеру приложения; если он не запущен — запускает его
 /// (при `hidden` — сразу за пределами экрана).
 pub async fn ensure(profile: &Path, hidden: bool) -> Result<Cdp> {
@@ -70,6 +79,8 @@ pub async fn ensure(profile: &Path, hidden: bool) -> Result<Cdp> {
                 "--disable-backgrounding-occluded-windows",
                 "--disable-renderer-backgrounding",
                 "--disable-background-timer-throttling",
+                // Не восстанавливать прошлую сессию и не показывать пузырь «восстановить вкладки».
+                "--hide-crash-restore-bubble",
             ]);
         if hidden {
             cmd.arg(format!("--window-position={OFFSCREEN},{OFFSCREEN}"));
@@ -90,12 +101,28 @@ pub async fn ensure(profile: &Path, hidden: bool) -> Result<Cdp> {
         sleep(Duration::from_secs(2)).await;
     }
 
+    // Оставляем ровно одну вкладку, остальные закрываем, чтобы вкладки TikTok
+    // (накопившиеся из-за восстановления сессии или случайных ссылок) не ели память.
     let list = targets().await?;
-    let pick = list
-        .iter()
-        .filter(|t| t.kind == "page" && t.ws.is_some())
-        .max_by_key(|t| t.url.contains("tiktok.com") as u8);
-    let ws = match pick.and_then(|t| t.ws.clone()) {
+    let pages: Vec<&Target> = list.iter().filter(|t| t.kind == "page" && t.ws.is_some()).collect();
+    let keep = pages.iter().copied().max_by_key(|t| {
+        if t.url.contains("tiktok.com/messages") {
+            3
+        } else if t.url.contains("tiktok.com") {
+            2
+        } else if t.url.starts_with("http") {
+            1
+        } else {
+            0
+        }
+    });
+    let keep_id = keep.map(|t| t.id.clone());
+    for t in &pages {
+        if Some(&t.id) != keep_id.as_ref() {
+            close_target(&t.id).await;
+        }
+    }
+    let ws = match keep.and_then(|t| t.ws.clone()) {
         Some(w) => w,
         None => {
             let t: Target = reqwest::Client::new()
